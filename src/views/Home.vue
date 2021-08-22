@@ -31,8 +31,8 @@
         <button @click="op" value="^">x&#94;y</button> <!-- x^y -->
         
       </div>
-      <div>{{explain}}</div>
     </div>
+    <h4 v-html="this.displayExplain()"></h4>
   </div>
 </template>
 
@@ -47,11 +47,32 @@ export default {
       numSize : 0,
       number : ['',''],
       operator : '',
-      explain : '',
+      explain: '',
+      opMap : new Map([
+        ['+', '두 피연산지를 합하여 하나의 수로 만든다.'],
+        ['-', '두 피연산지의 차를 구하여 하나의 수로 만든다.'],
+        ['*', '두 피연산지를 곱하여 하나의 수를 만든다.\nX x Y일 때, X를 Y횟수만큼 더한다.'],
+        ['/', '두 피연산지를 나누어 하나의 수를 만든다.\nX / Y일 때, X를 Y횟수만큼 뺀다.'],
+        ['%', '두 피연산지를 나누어 나온 결과를 반환한다.\nX % Y일 때, X를 Y로 나누고 남은 나머지이다.'],
+        ['^', 'x를 y횟수 만큼 곱한다. x의 y제곱'],
+        ['<<', '첫 번째 피연산자를 이진수로 보고, 두번째 피연산자 만큼 왼쪽으로 자리를 올린다.\nX << Y일 때, X를 Y만큼 쉬프트한다.\n한 자리 쉬프트 할 때마다 2를 곱하는것과 같다.'],
+        ['>>', '첫 번째 피연산자를 이진수로 보고, 두번째 피연산자 만큼 오른쪽으로 자리를 올린다.\nX >> Y일 때, X를 Y만큼 쉬프트한다.\n한 자리 쉬프트 할 때마다 2로 나누는것과 같다.'],
+        ['tan', 'C가 직각인 삼각형 ABC에서, 각 A, B, C의 대변(마주보는 변)의 길이를 a,b,h라고 할 때,\ntan A = a/b'],
+        ['cos', 'C가 직각인 삼각형 ABC에서, 각 A, B, C의 대변(마주보는 변)의 길이를 a,b,h라고 할 때,\ncos A = b/h'],
+        ['sin', 'C가 직각인 삼각형 ABC에서, 각 A, B, C의 대변(마주보는 변)의 길이를 a,b,h라고 할 때,\nsin A = a/h'],
+      ])
+
     }
   },
   methods: {
+    displayExplain() {
+      if(this.explain!=''){
+        return this.explain.replace(/\n/g, '<br />');
+      }
+      return '';
+    },
     op(evt) {
+      this.explain = this.opMap.get(evt.target.value);
       let isDec = /\d+ ?$/;
       console.log(this.numSize);
       console.log(this.panel);
@@ -90,6 +111,7 @@ export default {
         this.number[this.numSize] += evt.target.value;
         this.panel = this.panel + evt.target.value;
       }
+      this.explain = '';
       console.log('panel : '+this.panel+', numSize : '+this.numSize+', number : '+this.number+', operator :'+this.operator+', explain : '+this.explain)
 
     },
@@ -140,7 +162,6 @@ export default {
           break;
         case '<<':
           res = this.number[0] << this.number[1];
-          break;
         case '>>':
           res = this.number[0] >> this.number[1];
           break;
@@ -167,6 +188,8 @@ export default {
         this.binaryCalc();
       }
       debugger
+      
+      this.explain = this.opMap.get(evt.target.value);
       if (this.number[0] == '') this.number[0] = 0;
       this.number[0] = parseFloat(this.number[0]);
       this.operator = evt.target.value;
